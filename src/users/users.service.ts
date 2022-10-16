@@ -7,7 +7,7 @@ export class UsersService {
 
     register(login: string, pass: string): string {
         let doesUserExist = this.users.findIndex(value => value.login === login) !== -1
-        if (doesUserExist) return 'Пользователь уже зарегистрирован';
+        if (doesUserExist) throw new BadRequestException('Пользователь уже зарегистрирован');
         else {
             let newUser = {
                 login: login,
