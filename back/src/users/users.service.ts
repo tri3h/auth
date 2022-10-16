@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.class';
 
 @Injectable()
@@ -41,6 +41,15 @@ export class UsersService {
 
     isDataFilled(login: string): boolean {
         return this.findUser(login).data.name != null;
+    }
+
+    getData(login: string) : User {
+        const user = this.findUser(login);
+        if (user.data.name == null) {
+            throw new NotFoundException('Профиль еще не заполнен');
+        } else {
+            return user;
+        }
     }
 
     editData(login: string, data) {

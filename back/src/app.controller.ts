@@ -5,8 +5,6 @@ import { LocalAuthGuard } from './auth/guards/local-auth.guard';
 import { EditUserData, User, UserData } from './users/user.class';
 import { UsersService } from './users/users.service';
 
-require("dotenv").config();
-
 @Controller()
 export class AppController {
   constructor(
@@ -24,16 +22,10 @@ export class AppController {
     return this.authService.login(req.user);
   }
 
-  // @UseGuards(LocalAuthGuard)
-  // @Post('auth/logout')
-  // async logout(@Request() req) {
-  //   return this.authService.login(req.user);
-  // }
-
   @UseGuards(JwtAuthGuard)
   @Get('users')
   getUser(@Request() req) {
-    const user = this.usersService.findUser(req.user.login)
+    const user = this.usersService.getData(req.user.login);
     return user.data;
   }
 

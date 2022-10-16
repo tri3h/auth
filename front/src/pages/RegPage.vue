@@ -1,7 +1,7 @@
 <template>
   <q-page class="column items-center justify-center">
 
-    <div class="q-pa-md" style="width: 350px">
+    <div class="q-pa-md reg-form">
 
       <q-form @submit="onSubmit" class="q-gutter-md column items-center justify-center">
 
@@ -26,10 +26,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { baseURL } from 'assets/constants'
 
 const axios = require('axios').default;
 const axios_instance = axios.create({
-  baseURL: 'http://localhost:3000'
+  baseURL: baseURL
 });
 axios_instance.defaults.headers.post['Content-Type'] = 'application/json'
 
@@ -56,6 +57,8 @@ function onSubmit() {
   
 <style lang="scss">
 .reg-form {
+  width: $width;
+
   &__title {
     color: $primary;
     font-size: x-large;
