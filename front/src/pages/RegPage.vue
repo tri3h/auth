@@ -17,6 +17,18 @@
 
         <p class="reg-form__error">{{errMes}}</p>
 
+        <q-dialog v-model="alert" >
+          <q-card>
+            <q-card-section class="q-ma-lg">
+              <div class="text-h6">Пользователь успешно зарегистрирован</div>
+            </q-card-section>
+
+            <q-card-actions align="center" class="q-ma-lg">
+              <q-btn flat label="Войти" class="text-h6 full-width" color="primary" v-close-popup @click="onLogin" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
       </q-form>
 
     </div>
@@ -28,30 +40,33 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { baseURL } from 'assets/constants'
 
-const axios = require('axios').default;
-const axios_instance = axios.create({
-  baseURL: baseURL
-});
-axios_instance.defaults.headers.post['Content-Type'] = 'application/json'
+const axios = require('axios').default.create({
+    baseURL: baseURL,
+    headers: {'Content-Type' : 'application/json'}
+  });
 
 const email = ref(null)
 const password = ref(null)
 const errMes = ref();
+const alert = ref(false);
 
 const router = useRouter();
 
 function onSubmit() {
-  axios_instance.post('/auth/register', {
+  axios.post('/auth/register', {
     login: email.value,
     password: password.value
   })
     .then(function (resp: any) {
-      //нужно залогиниться еще 
-      router.push({path: 'user'})
+      alert.value = true;
     })
     .catch(function (error: any) {
       errMes.value = error.response.data.message;
     });
+}
+
+function onLogin() {
+  router.push({path: 'login'});
 }
 </script>
   
@@ -62,7 +77,7 @@ function onSubmit() {
   &__title {
     color: $primary;
     font-size: x-large;
-    font-weight: 700;
+    font-weight: bold;
     margin: 0;
   }
 

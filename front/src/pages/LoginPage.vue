@@ -27,28 +27,29 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { baseURL } from 'assets/constants'
-  
-  const axios = require('axios').default;
-  const axios_instance = axios.create({
-    baseURL: baseURL
+  import { login } from 'assets/queries'
+
+  const axios = require('axios').default.create({
+    baseURL: baseURL,
+    headers: {'Content-Type' : 'application/json'}
   });
-  axios_instance.defaults.headers.post['Content-Type'] = 'application/json'
+
   
-  const email = ref(null)
-  const password = ref(null)
+  const email = ref()
+  const password = ref()
   const errMes = ref();
   
   const router = useRouter();
-  
+
   function onSubmit() {
-    axios_instance.post('auth/login', {
+      axios.post('auth/login', {
       login: email.value,
       password: password.value
     })
       .then(function (resp: any) {
         localStorage.setItem('access_token', resp.data.access_token)
         //console.log(localStorage.getItem('access_token'))
-        router.push({path: 'user'})
+        router.replace({path: 'user'})
       })
       .catch(function (error: any) {
         errMes.value = error.response.data.message;
@@ -63,7 +64,7 @@
     &__title {
       color: $primary;
       font-size: x-large;
-      font-weight: 700;
+      font-weight: bold;
       margin: 0;
     }
   

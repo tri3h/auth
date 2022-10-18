@@ -1,17 +1,19 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { User } from './user.class';
 
 @Injectable()
 export class UsersService {
     private users: User[] = [];
 
-    register(login: string, pass: string): string {
-        let doesUserExist = this.users.findIndex(value => value.login === login) !== -1
-        if (doesUserExist) throw new BadRequestException('Пользователь уже зарегистрирован');
+    register(login: string, password: string): string {
+        const doesUserExist = this.users.findIndex(value => value.login === login) !== -1;
+        if (doesUserExist) {
+            throw new BadRequestException('Пользователь уже зарегистрирован');
+        }
         else {
-            let newUser = {
+            const newUser = {
                 login: login,
-                password: pass,
+                password: password,
                 data: {
                     name: null,
                     address: null,
@@ -24,49 +26,42 @@ export class UsersService {
         }
     }
 
-    addData(login: string, data) {
-        const user = this.findUser(login);
-        if (!this.isDataFilled(login)) {
+    create(login: string, data) {
+        const user = this.get(login);
+        if (!this.isFilled(login)) {
             for (let key in user.data) {
                 user.data[key] = data[key];
             }
+            return user.data;
         } else {
             throw new BadRequestException("Пользователь уже создан");
         }
     }
 
-    findUser(login: string): User | undefined {
+    get(login: string): User | undefined {
         return this.users.find(user => user.login === login);
     }
 
-    isDataFilled(login: string): boolean {
-        return this.findUser(login).data.name != null;
+    isFilled(login: string): boolean {
+        return this.get(login).data.name != null;
     }
 
-    getData(login: string) : User {
-        const user = this.findUser(login);
-        if (user.data.name == null) {
-            throw new NotFoundException('Профиль еще не заполнен');
-        } else {
-            return user;
-        }
-    }
-
-    editData(login: string, data) {
-        const user = this.findUser(login);
-        if (this.isDataFilled(login)) {
+    edit(login: string, data) {
+        const user = this.get(login);
+        if (this.isFilled(login)) {
             for (let key in user.data) {
                 if (data.hasOwnProperty(key)) {
                     user.data[key] = data[key];
                 }
             }
+            return user.data;
         } else {
             throw new BadRequestException("Пользователь еще не создан");
         }
     }
 
-    deleteData(login: string): void {
-        const user = this.findUser(login);
+    delete(login: string): void {
+        const user = this.get(login);
         for (let key in user.data) {
             user.data[key] = null;
         }

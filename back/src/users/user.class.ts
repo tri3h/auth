@@ -22,7 +22,6 @@ export class UserData {
     @IsNotEmpty()
     address: string;
 
-    @IsNotEmpty()
     @IsOptional()
     info: string;
 }
@@ -41,7 +40,6 @@ export class EditUserData {
     @IsOptional()
     address: string;
 
-    @IsNotEmpty()
     @IsOptional()
     info: string;
 }

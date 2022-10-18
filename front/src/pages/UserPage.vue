@@ -1,74 +1,212 @@
 <template>
-    <q-page class="column items-center justify-center q-gutter-md">
+    <q-page class="column items-center justify-center">
 
-        <h1 class="user__title">Профиль</h1>
+        <div class="user-wrapper q-gutter-md">
 
-        <!-- <p>{{mes}}</p> -->
+            <div class="row justify-between items-center no-margin">
 
+                <label class="text-h6">Профиль</label>
 
-        <q-btn v-if="!profileFilled" label="Создать" type="submit" color="primary" class="user__button" @click="createProfile"/>
+                <q-btn label="Выйти" type="submit" color="primary" @click="logout" />
 
-        <q-btn v-if="profileFilled" label="Редактировать" type="submit" color="primary" class="user__button" @click="editProfile"/>
+            </div>
 
-        <q-btn v-if="profileFilled" label="Удалить" type="submit" color="primary" class="user__button" @click="deleteProfile"/>
+            <q-form ref="userForm" class="no-margin q-gutter-md">
 
-        <q-btn label="Выйти" type="submit" color="primary" class="user__button" @click="logout"/>
+                <q-input filled stack-label label="Имя" v-model="name" placeholder="Введите имя" lazy-rules
+                    :rules="[val => val && val.length > 0 || 'Введите имя']" :hint="hint" :dense="dense"
+                    class="full-width" />
 
+                <q-input filled stack-label label="Телефон" mask="+###########" v-model="phone"
+                    placeholder="Введите телефон" lazy-rules
+                    :rules="[val => val && val.length >= 11 || 'Введите телефон в формате +# (###) ### - ####']"
+                    :hint="hint" :dense="dense" class="full-width" />
 
+                <q-input filled stack-label label="Адрес" v-model="address" placeholder="Введите адрес" lazy-rules
+                    :rules="[val => val && val.length > 0 || 'Введите адрес']" :hint="hint" :dense="dense"
+                    class="full-width" />
+
+                <q-input filled stack-label label="Информация о себе" v-model="info"
+                    placeholder="Введите информацию о себе" :dense="dense" autogrow class="full-width"
+                    maxlength="355" />
+
+                <q-btn v-if="!profileFilled" label="Создать профиль" color="primary" class="full-width"
+                    @click="createProfile" />
+
+                <q-btn v-if="profileFilled" label="Сохранить изменения" color="primary" class="full-width"
+                    @click="editProfile" />
+
+            </q-form>
+
+            <q-btn v-if="profileFilled" label="Удалить профиль" color="primary" class="full-width"
+                @click="confirmDeletion" />
+
+            <q-dialog v-model="confirm" persistent>
+                <q-card>
+                    <q-card-section class="row items-center">
+                        <span class="q-ml-sm">Вы уверены, что хотите удалить профиль?</span>
+                    </q-card-section>
+
+                    <q-card-actions align="right">
+                        <q-btn flat label="Да" color="primary" v-close-popup @click="deleteProfile" />
+                        <q-btn flat label="Нет" color="primary" v-close-popup />
+                    </q-card-actions>
+                </q-card>
+            </q-dialog>
+
+        </div>
     </q-page>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { baseURL } from 'assets/constants'
+import { useQuasar } from 'quasar'
 
 const router = useRouter();
-let profileFilled = false;
+const $q = useQuasar()
 
-const axios = require('axios').default;
-const axios_instance = axios.create({
-    baseURL: baseURL
+const profileFilled = ref(false);
+const name = ref('');
+const phone = ref('');
+const address = ref('');
+const info = ref('');
+const dense = ref(false);
+const hint = ref('Обязательное поле');
+const userForm = ref();
+const confirm = ref(false);
+
+const axios = require('axios').default.create({
+    baseURL: baseURL,
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+    }
 });
-//добавить во все запросы токен
-// axios_instance.defaults.headers.post['Content-Type'] = 'application/json'
-// axios_instance.defaults.headers.get['Authorization'] = 'Bearer ' + localStorage.getItem('access_token');
 
-axios_instance.get('users', {
+getProfile();
 
-})
-    .then(function(resp: any) {
-        console.log(resp)
-        console.log(axios_instance.defaults.headers)
-    })
+function getProfile() {
+    axios.get('users', {})
+        .then(function (resp: any) {
+            if (resp.data.name != null) {
+                insertData(resp.data);
+            }
+        })
+        .catch(function (error: any) {
+            $q.notify({
+                message: error.response.data.message,
+                color: 'negative'
+            })
+        });
+}
 
 function logout() {
     //запрос на сервер на занесение токена в блэклист?
     localStorage.removeItem('access_token');
-    router.push({path: '/'});
+    router.back();
 }
 
-// function createProfile() {
+window.onpopstate = () => logout();
 
-// }
+function createProfile() {
 
-// function editProfile() {
+    userForm.value.validate().then((success: boolean) => {
+        if (success) {
+            axios.post('users', {
+                name: name.value,
+                phone: phone.value,
+                address: address.value,
+                info: info.value
+            })
+                .then(function (resp: any) {
+                    insertData(resp.data);
+                    $q.notify({
+                        message: "Профиль создан",
+                        color: 'positive'
+                    })
+                })
+                .catch(function (error: any) {
+                    $q.notify({
+                        message: error.response.data.message,
+                        color: 'negative'
+                    })
+                });
+        }
+    })
+}
 
-// }
+function insertData(data: any) {
+    name.value = data.name;
+    phone.value = data.phone;
+    address.value = data.address;
+    info.value = data.info;
+    profileFilled.value = true;
+}
 
-// function deleteProfile() {
+function removeData() {
+    name.value = '';
+    phone.value = '';
+    address.value = '';
+    info.value = '';
+    profileFilled.value = false;
+}
 
-// }
+function editProfile() {
+    userForm.value.validate().then((success: boolean) => {
+        if (success) {
+            axios.put('users', {
+                name: name.value,
+                phone: phone.value,
+                address: address.value,
+                info: info.value
+            })
+                .then(function (resp: any) {
+                    insertData(resp.data);
+                    $q.notify({
+                        message: "Профиль изменен",
+                        color: 'positive'
+                    })
+                })
+                .catch(function (error: any) {
+                    $q.notify({
+                        message: error.response.data.message,
+                        color: 'negative'
+                    })
+                });
+        }
+    })
+}
+
+function confirmDeletion() {
+    confirm.value = true;
+}
+
+function deleteProfile() {
+    axios.delete('users')
+        .then(function (resp: any) {
+            removeData();
+            $q.notify({
+                message: "Профиль удален",
+                color: 'positive'
+            })
+        })
+        .catch(function (error: any) {
+            $q.notify({
+                message: error.response.data.message,
+                color: 'negative'
+            })
+        });
+}
+
+
 </script>
 
 <style lang="scss">
 .user {
-    &__title {
-        font-size: x-large;
-    }
-
-    &__button {
+    &-wrapper {
         width: $width;
     }
 }
-
 </style>

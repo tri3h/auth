@@ -2,7 +2,9 @@
   <q-layout view="hHh lpR fFf">
 
     <q-page-container>
-      <router-view />
+      <transition enter-active-class="animated fadeIn" appear>
+        <router-view />
+      </transition>
     </q-page-container>
   </q-layout>
 </template>
