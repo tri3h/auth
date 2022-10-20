@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber} from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber } from "class-validator";
 
 export class User {
     @IsEmail()
@@ -17,7 +17,7 @@ export class UserData {
 
     @IsPhoneNumber()
     @IsNotEmpty()
-    phone: string; 
+    phone: string;
 
     @IsNotEmpty()
     address: string;
@@ -34,7 +34,7 @@ export class EditUserData {
     @IsPhoneNumber()
     @IsNotEmpty()
     @IsOptional()
-    phone: string; 
+    phone: string;
 
     @IsNotEmpty()
     @IsOptional()

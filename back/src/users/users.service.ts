@@ -5,27 +5,6 @@ import { User } from './user.class';
 export class UsersService {
     private users: User[] = [];
 
-    register(login: string, password: string): string {
-        const doesUserExist = this.users.findIndex(value => value.login === login) !== -1;
-        if (doesUserExist) {
-            throw new BadRequestException('Пользователь уже зарегистрирован');
-        }
-        else {
-            const newUser = {
-                login: login,
-                password: password,
-                data: {
-                    name: null,
-                    address: null,
-                    phone: null,
-                    info: null
-                }
-            };
-            this.users.push(newUser);
-            return 'Регистрация успешна';
-        }
-    }
-
     create(login: string, data) {
         const user = this.get(login);
         if (!this.isFilled(login)) {
@@ -36,6 +15,20 @@ export class UsersService {
         } else {
             throw new BadRequestException("Пользователь уже создан");
         }
+    }
+
+    createEmpty(login: string, password: string) {
+        const newUser = {
+            login: login,
+            password: password,
+            data: {
+                name: null,
+                address: null,
+                phone: null,
+                info: null
+            }
+        }
+        this.users.push(newUser);
     }
 
     get(login: string): User | undefined {

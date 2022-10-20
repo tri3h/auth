@@ -13,7 +13,7 @@ export class AppController {
 
   @Post('auth/register')
   register(@Body() body: User) {
-    return this.usersService.register(body.login, body.password);
+    return this.authService.register(body.login, body.password);
   }
 
   @UseGuards(LocalAuthGuard)
