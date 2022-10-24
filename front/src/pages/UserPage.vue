@@ -118,7 +118,7 @@ function getProfile() {
 
 function logout() {
     localStorage.removeItem('access_token');
-    router.back();
+    router.replace('login');
 }
 
 function createProfile() {

@@ -65,4 +65,5 @@ yarn-error.log*
 *.njsproj
 *.sln
 
+*/.vercel
 
