@@ -25,26 +25,26 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('users')
   getUser(@Request() req) {
-    const user = this.usersService.get(req.user.login);
-    return user.data;
+    const user = this.usersService.getData(req.user.login);
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('users')
   addUser(@Request() req, @Body() body: UserData) {
-    return this.usersService.create(req.user.login, body);
+    return this.usersService.addData(req.user.login, body);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('users')
   editUser(@Request() req, @Body() body: EditUserData) {
-    return this.usersService.edit(req.user.login, body);
+    return this.usersService.updateData(req.user.login, body);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('users')
   deleteUser(@Request() req) {
-    return this.usersService.delete(req.user.login);
+    return this.usersService.removeData(req.user.login);
   }
 
 }

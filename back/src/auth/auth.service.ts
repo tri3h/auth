@@ -10,15 +10,17 @@ export class AuthService {
     private jwtService: JwtService
   ) { }
 
-  async register(login: string, password: string): Promise<string> {
-    const doesUserExist = typeof this.usersService.get(login) != 'undefined';
-    if (doesUserExist) {
-      throw new BadRequestException('Пользователь уже зарегистрирован');
-    }
-    else {
-      this.usersService.createEmpty(login, await this.hashPassword(password));
-      return 'Регистрация успешна';
-    }
+  async register(login: string, password: string) {
+    return this.usersService.get(login).then(async user => {
+      if (user !== null) {
+        throw new BadRequestException('Пользователь уже зарегистрирован');
+      }
+      else {
+        this.usersService.create(login, await this.hashPassword(password));
+        return 'Регистрация успешна';
+      }
+
+    })
   }
 
   async hashPassword(password: string) {
