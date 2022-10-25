@@ -5,11 +5,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { baseURL } from 'src/utils/constants'
 import LoginComponent from 'components/LoginComponent.vue'
 
 const axios = require('axios').default.create({
-  baseURL: baseURL,
+  baseURL: process.env.BASE_URL,
   headers: { 'Content-Type': 'application/json' }
 });
 

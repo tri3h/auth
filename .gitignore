@@ -66,4 +66,5 @@ yarn-error.log*
 *.sln
 
 */.vercel
-
+*/.env
+*/.env.local

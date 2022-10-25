@@ -17,9 +17,7 @@ export class AuthService {
       }
       else {
         this.usersService.create(login, await this.hashPassword(password));
-        return 'Регистрация успешна';
       }
-
     })
   }
 

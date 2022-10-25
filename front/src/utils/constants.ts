@@ -1,1 +1,0 @@
-export const baseURL = 'https://auth-back-tri3h.vercel.app'

@@ -62,7 +62,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { baseURL } from 'src/utils/constants';
 
 const router = useRouter();
 const $q = useQuasar()
@@ -77,7 +76,7 @@ const userForm = ref();
 const confirm = ref(false);
 
 const axios = require('axios').default.create({
-    baseURL: baseURL,
+    baseURL: process.env.BASE_URL,
     headers: {
         'Content-Type': 'application/json'
     }

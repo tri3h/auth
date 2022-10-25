@@ -39,14 +39,14 @@ export class UsersService {
 
     async updateData(login: string, data) {
         if (await this.isFilled(login)) {
-            const { id, ...result } = await this.usersRepository.save({
+            await this.usersRepository.save({
                 id: await this.getID(login),
                 name: data.name,
                 phone: data.phone,
                 address: data.address,
                 info: data.info
             })
-            return result;
+            return this.getData(login);
         } else {
             throw new BadRequestException("Пользователь еще не создан");
         }
